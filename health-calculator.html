@@ -3,671 +3,746 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Phần Mềm Đo Chỉ Số Sức Khỏe</title>
+    <title>Health Calculator Pro - Công cụ tính chỉ số sức khỏe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
         body {
-            min-height: 100vh;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .gradient-bg {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
         }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
+        .card-shadow {
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         }
-
-        .header {
-            text-align: center;
+        .tab-active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            margin-bottom: 30px;
         }
-
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-
-        .tabs {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
-            justify-content: center;
-        }
-
-        .tab-btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 25px;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            font-size: 1rem;
-            cursor: pointer;
+        .result-card {
             transition: all 0.3s ease;
-            font-weight: 500;
         }
-
-        .tab-btn:hover {
-            background: rgba(255,255,255,0.3);
+        .result-card:hover {
             transform: translateY(-2px);
         }
-
-        .tab-btn.active {
-            background: white;
-            color: #667eea;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: #e2e8f0;
         }
-
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            display: none;
-            animation: fadeIn 0.4s ease;
-        }
-
-        .card.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 14px 18px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102,126,234,0.1);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        @media (max-width: 500px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .btn-calculate {
-            width: 100%;
-            padding: 16px;
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.1rem;
-            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
         }
-
-        .btn-calculate:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(102,126,234,0.4);
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            transition: width 0.5s ease;
         }
-
-        .result {
-            margin-top: 25px;
-            padding: 25px;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 15px;
-            display: none;
+        .pulse-animation {
+            animation: pulse 2s infinite;
         }
-
-        .result.show {
-            display: block;
-            animation: slideUp 0.5s ease;
-        }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .result h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-        }
-
-        .result-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .result-item:last-child {
-            border-bottom: none;
-        }
-
-        .result-label {
-            font-weight: 500;
-            color: #555;
-        }
-
-        .result-value {
-            font-weight: 700;
-            color: #333;
-            font-size: 1.1rem;
-        }
-
-        .bmi-scale {
-            margin-top: 20px;
-            position: relative;
-        }
-
-        .bmi-bar {
-            height: 30px;
-            border-radius: 15px;
-            background: linear-gradient(to right, 
-                #3498db 0%, #3498db 18%,
-                #2ecc71 18%, #2ecc71 36%,
-                #f1c40f 36%, #f1c40f 55%,
-                #e74c3c 55%, #e74c3c 100%
-            );
-            position: relative;
-        }
-
-        .bmi-marker {
-            position: absolute;
-            top: -10px;
-            width: 4px;
-            height: 50px;
-            background: #333;
-            border-radius: 2px;
-            transition: left 0.5s ease;
-        }
-
-        .bmi-marker::after {
-            content: '▼';
-            position: absolute;
-            top: -25px;
-            left: -8px;
-            font-size: 18px;
-            color: #333;
-        }
-
-        .bmi-legend {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-            font-size: 0.85rem;
-            color: #666;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-weight: 600;
-            margin-top: 15px;
-        }
-
-        .status-underweight { background: #3498db; color: white; }
-        .status-normal { background: #2ecc71; color: white; }
-        .status-overweight { background: #f1c40f; color: white; }
-        .status-obese { background: #e74c3c; color: white; }
-
-        .water-result {
-            text-align: center;
-            padding: 20px;
-        }
-
-        .water-icon {
-            font-size: 4rem;
-            margin-bottom: 15px;
-        }
-
-        .water-amount {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #3498db;
-        }
-
-        .water-unit {
-            font-size: 1.2rem;
-            color: #666;
-        }
-
-        .health-tips {
-            margin-top: 20px;
-            padding: 15px;
-            background: #e8f4f8;
-            border-radius: 10px;
-            border-left: 4px solid #3498db;
-        }
-
-        .health-tips h4 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-
-        .health-tips ul {
-            margin-left: 20px;
-            color: #555;
-        }
-
-        .health-tips li {
-            margin: 5px 0;
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🏥 Sức Khỏe Pro</h1>
-            <p>Phần mềm đo chỉ số sức khỏe toàn diện</p>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-8 px-4">
+        <div class="max-w-5xl mx-auto text-center">
+            <h1 class="text-4xl font-bold mb-2">🏥 Health Calculator Pro</h1>
+            <p class="text-lg opacity-90">Công cụ tính chỉ số sức khỏe toàn diện</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-5xl mx-auto px-4 py-8">
+        <!-- Tabs -->
+        <div class="flex flex-wrap justify-center gap-2 mb-8">
+            <button onclick="showTab('bmi')" id="tab-bmi" class="tab-btn tab-active px-5 py-3 rounded-full font-medium transition-all duration-300 bg-gray-200 hover:bg-gray-300">
+                📊 BMI
+            </button>
+            <button onclick="showTab('bodyfat')" id="tab-bodyfat" class="tab-btn px-5 py-3 rounded-full font-medium transition-all duration-300 bg-gray-200 hover:bg-gray-300">
+                📏 Tỷ lệ mỡ
+            </button>
+            <button onclick="showTab('calories')" id="tab-calories" class="tab-btn px-5 py-3 rounded-full font-medium transition-all duration-300 bg-gray-200 hover:bg-gray-300">
+                🔥 Calories
+            </button>
+            <button onclick="showTab('idealweight')" id="tab-idealweight" class="tab-btn px-5 py-3 rounded-full font-medium transition-all duration-300 bg-gray-200 hover:bg-gray-300">
+                ⚖️ Cân nặng lý tưởng
+            </button>
+            <button onclick="showTab('water')" id="tab-water" class="tab-btn px-5 py-3 rounded-full font-medium transition-all duration-300 bg-gray-200 hover:bg-gray-300">
+                💧 Nước
+            </button>
+            <button onclick="showTab('heart')" id="tab-heart" class="tab-btn px-5 py-3 rounded-full font-medium transition-all duration-300 bg-gray-200 hover:bg-gray-300">
+                ❤️ Nhịp tim
+            </button>
         </div>
 
-        <div class="tabs">
-            <button class="tab-btn active" onclick="showTab('bmi')">⚖️ BMI</button>
-            <button class="tab-btn" onclick="showTab('bmr')">🔥 BMR</button>
-            <button class="tab-btn" onclick="showTab('tdee')">📊 TDEE</button>
-            <button class="tab-btn" onclick="showTab('blood')">❤️ Huyết áp</button>
-            <button class="tab-btn" onclick="showTab('water')">💧 Nước</button>
-        </div>
-
-        <!-- BMI Calculator -->
-        <div class="card active" id="bmi">
-            <h2 style="color: #333; margin-bottom: 20px;">📊 Chỉ Số Khối Cơ Thể (BMI)</h2>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Cân nặng (kg)</label>
-                    <input type="number" id="bmi-weight" placeholder="Nhập cân nặng" step="0.1">
-                </div>
-                <div class="form-group">
-                    <label>Chiều cao (cm)</label>
-                    <input type="number" id="bmi-height" placeholder="Nhập chiều cao" step="0.1">
+        <!-- Content Cards -->
+        <div class="bg-white rounded-2xl card-shadow p-6 md:p-8">
+            
+            <!-- BMI Calculator -->
+            <div id="content-bmi" class="tab-content">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Tính chỉ số BMI (Body Mass Index)</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Chiều cao (cm)</label>
+                            <input type="number" id="bmi-height" value="170" min="100" max="250" 
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors text-lg"
+                                oninput="calculateBMI()">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Cân nặng (kg)</label>
+                            <input type="number" id="bmi-weight" value="65" min="20" max="300" 
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors text-lg"
+                                oninput="calculateBMI()">
+                        </div>
+                        <div class="pt-4">
+                            <div class="flex justify-between text-sm text-gray-500 mb-2">
+                                <span>Preview:</span>
+                                <span id="bmi-preview">170 cm, 65 kg</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-6">
+                        <div class="text-center mb-6">
+                            <div id="bmi-result" class="text-6xl font-bold text-purple-600 mb-2">22.49</div>
+                            <div id="bmi-category" class="text-xl font-semibold text-green-600">Bình thường</div>
+                        </div>
+                        <!-- BMI Scale -->
+                        <div class="relative h-4 rounded-full bg-gradient-to-r from-blue-400 via-green-400 via-yellow-400 to-red-500 mb-4">
+                            <div id="bmi-indicator" class="absolute w-4 h-6 bg-white border-4 border-purple-600 rounded-full -top-1 transform -translate-x-1/2 shadow-lg" style="left: 30%"></div>
+                        </div>
+                        <div class="flex justify-between text-xs text-gray-500">
+                            <span>15</span>
+                            <span>18.5</span>
+                            <span>25</span>
+                            <span>30</span>
+                            <span>40</span>
+                        </div>
+                        <!-- BMI Categories -->
+                        <div class="mt-6 space-y-2 text-sm">
+                            <div class="flex items-center"><span class="w-3 h-3 bg-blue-400 rounded-full mr-2"></span> Dưới 18.5: Thiếu cân</div>
+                            <div class="flex items-center"><span class="w-3 h-3 bg-green-400 rounded-full mr-2"></span> 18.5 - 24.9: Bình thường</div>
+                            <div class="flex items-center"><span class="w-3 h-3 bg-yellow-400 rounded-full mr-2"></span> 25 - 29.9: Thừa cân</div>
+                            <div class="flex items-center"><span class="w-3 h-3 bg-red-500 rounded-full mr-2"></span> Trên 30: Béo phì</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <button class="btn-calculate" onclick="calculateBMI()">Tính BMI</button>
-            <div class="result" id="bmi-result">
-                <h3>✅ Kết quả BMI</h3>
-                <div class="result-item">
-                    <span class="result-label">Chỉ số BMI của bạn:</span>
-                    <span class="result-value" id="bmi-value">--</span>
+
+            <!-- Body Fat Calculator -->
+            <div id="content-bodyfat" class="tab-content hidden">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Tính tỷ lệ mỡ cơ thể (US Navy Method)</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Giới tính</label>
+                            <select id="bf-gender" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors text-lg" onchange="calculateBodyFat()">
+                                <option value="male">Nam</option>
+                                <option value="female">Nữ</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Chiều cao (cm)</label>
+                            <input type="number" id="bf-height" value="170" min="100" max="250" 
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors text-lg"
+                                oninput="calculateBodyFat()">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Vòng eo (cm)</label>
+                            <input type="number" id="bf-waist" value="80" min="40" max="200" 
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors text-lg"
+                                oninput="calculateBodyFat()">
+                        </div>
+                        <div id="bf-hip-container">
+                            <label class="block text-gray-700 font-medium mb-2">Vòng mông (cm) - chỉ cho nữ</label>
+                            <input type="number" id="bf-hip" value="95" min="50" max="200" 
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors text-lg"
+                                oninput="calculateBodyFat()">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Vòng cổ (cm)</label>
+                            <input type="number" id="bf-neck" value="38" min="20" max="80" 
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors text-lg"
+                                oninput="calculateBodyFat()">
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-pink-50 to-orange-50 rounded-xl p-6">
+                        <div class="text-center mb-6">
+                            <div id="bf-result" class="text-6xl font-bold text-pink-600 mb-2">15.2%</div>
+                            <div id="bf-category" class="text-xl font-semibold text-green-600">Thể thao</div>
+                        </div>
+                        <!-- Body Fat Scale -->
+                        <div class="relative h-4 rounded-full bg-gradient-to-r from-yellow-400 via-green-400 via-blue-400 to-red-400 mb-4">
+                            <div id="bf-indicator" class="absolute w-4 h-6 bg-white border-4 border-pink-600 rounded-full -top-1 transform -translate-x-1/2 shadow-lg" style="left: 30%"></div>
+                        </div>
+                        <!-- Categories for Male -->
+                        <div id="bf-categories-male" class="mt-6 space-y-2 text-sm">
+                            <div class="flex items-center"><span class="w-3 h-3 bg-yellow-400 rounded-full mr-2"></span> 2-4%: Mỡ thiết yếu</div>
+                            <div class="flex items-center"><span class="w-3 h-3 bg-green-400 rounded-full mr-2"></span> 6-13%: Vận động viên</div>
+                            <div class="flex items-center"><span class="w-3 h-3 bg-blue-400 rounded-full mr-2"></span> 14-17%: Thể thao</div>
+                            <div class="flex items-center"><span class="w-3 h-3 bg-gray-400 rounded-full mr-2"></span> 18-24%: Bình thường</div>
+                            <div class="flex items-center"><span class="w-3 h-3 bg-red-400 rounded-full mr-2"></span> Trên 25%: Béo phì</div>
+                        </div>
+                        <!-- Categories for Female -->
+                        <div id="bf-categories-female" class="mt-6 space-y-2 text-sm hidden">
+                            <div class="flex items-center"><span class="w-3 h-3 bg-yellow-400 rounded-full mr-2"></span> 10-13%: Mỡ thiết yếu</div>
+                            <div class="flex items-center"><span class="w-3 h-3 bg-green-400 rounded-full mr-2"></span> 14-20%: Vận động viên</div>
+                            <div class="flex items-center"><span class="w-3 h-3 bg-blue-400 rounded-full mr-2"></span> 21-24%: Thể thao</div>
+                            <div class="flex items-center"><span class="w-3 h-3 bg-gray-400 rounded-full mr-2"></span> 25-31%: Bình thường</div>
+                            <div class="flex items-center"><span class="w-3 h-3 bg-red-400 rounded-full mr-2"></span> Trên 32%: Béo phì</div>
+                        </div>
+                    </div>
                 </div>
-                <div id="bmi-status"></div>
-                <div class="bmi-scale">
-                    <div class="bmi-bar"></div>
-                    <div class="bmi-marker" id="bmi-marker"></div>
-                    <div class="bmi-legend">
-                        <span>Thiếu cân</span>
-                        <span>Bình thường</span>
-                        <span>Thừa cân</span>
-                        <span>Béo phì</span>
+            </div>
+
+            <!-- Calories Calculator -->
+            <div id="content-calories" class="tab-content hidden">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Tính nhu cầu năng lượng (BMR & TDEE)</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Giới tính</label>
+                            <select id="cal-gender" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors text-lg" onchange="calculateCalories()">
+                                <option value="male">Nam</option>
+                                <option value="female">Nữ</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Tuổi</label>
+                            <input type="number" id="cal-age" value="30" min="10" max="120" 
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors text-lg"
+                                oninput="calculateCalories()">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Chiều cao (cm)</label>
+                            <input type="number" id="cal-height" value="170" min="100" max="250" 
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors text-lg"
+                                oninput="calculateCalories()">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Cân nặng (kg)</label>
+                            <input type="number" id="cal-weight" value="65" min="20" max="300" 
+                                class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors text-lg"
+                                oninput="calculateCalories()">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Mức độ hoạt động</label>
+                            <select id="cal-activity" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors text-lg" onchange="calculateCalories()">
+                                <option value="1.2">Ít vận động (Văn phòng)</option>
+                                <option value="1.375">Hoạt động nhẹ (1-3 ngày/tuần)</option>
+                                <option value="1.55" selected>Hoạt động vừa (3-5 ngày/tuần)</option>
+                                <option value="1.725">Hoạt động nặng (6-7 ngày/tuần)</option>
+                                <option value="1.9">Rất nặng (Vận động viên chuyên nghiệp)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-gradient-to-br from-orange-50 to-red-50 rounded-xl p-6 result-card">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-2">BMR (Năng lượng nghỉ ngơi)</h3>
+                            <div class="flex items-end justify-between">
+                                <div id="cal-bmr" class="text-4xl font-bold text-orange-600">1,650</div>
+                                <div class="text-gray-500">kcal/ngày</div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">Năng lượng cần để duy trì sự sống khi nghỉ ngơi hoàn toàn</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-green-50 to-teal-50 rounded-xl p-6 result-card">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-2">TDEE (Tổng năng lượng)</h3>
+                            <div class="flex items-end justify-between">
+                                <div id="cal-tdee" class="text-4xl font-bold text-green-600">2,558</div>
+                                <div class="text-gray-500">kcal/ngày</div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-2">Tổng năng lượng cần cho cả ngày hoạt động</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-xl p-4">
+                            <h4 class="font-semibold text-gray-700 mb-3">🎯 Mục tiêu cân nặng</h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between"><span>Giảm 0.5 kg/tuần:</span> <span id="cal-loss" class="font-bold text-red-500">2,058 kcal</span></div>
+                                <div class="flex justify-between"><span>Giữ cân:</span> <span id="cal-maintain" class="font-bold text-green-500">2,558 kcal</span></div>
+                                <div class="flex justify-between"><span>Tăng 0.5 kg/tuần:</span> <span id="cal-gain" class="font-bold text-blue-500">3,058 kcal</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ideal Weight Calculator -->
+            <div id="content-idealweight" class="tab-content hidden">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Tính cân nặng lý tưởng</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Giới tính</label>
+                            <select id="iw-gender" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors text-lg" onchange="calculateIdealWeight()">
+                                <option value="male">Nam</option>
+                                <option value="female">Nữ</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Chiều cao (cm)</label>
+                            <input type="range" id="iw-height" value="170" min="140" max="220" class="w-full" oninput="calculateIdealWeight(); document.getElementById('iw-height-display').textContent = this.value + ' cm'">
+                            <div class="flex justify-between text-sm text-gray-500 mt-1">
+                                <span>140 cm</span>
+                                <span id="iw-height-display" class="font-bold text-purple-600">170 cm</span>
+                                <span>220 cm</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6 result-card">
+                            <h3 class="text-lg font-semibold text-gray-700 mb-4">📊 Phạm vi cân nặng khỏe mạnh (BMI 18.5-24.9)</h3>
+                            <div class="flex justify-center items-center gap-4">
+                                <div id="iw-min" class="text-3xl font-bold text-blue-600">53.5 kg</div>
+                                <span class="text-gray-400">-</span>
+                                <div id="iw-max" class="text-3xl font-bold text-purple-600">72.0 kg</div>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-green-50 rounded-xl p-4 result-card">
+                                <h4 class="text-sm font-medium text-gray-600 mb-2">Devine Formula</h4>
+                                <div id="iw-devine" class="text-2xl font-bold text-green-600">66.4 kg</div>
+                            </div>
+                            <div class="bg-teal-50 rounded-xl p-4 result-card">
+                                <h4 class="text-sm font-medium text-gray-600 mb-2">Robinson Formula</h4>
+                                <div id="iw-robinson" class="text-2xl font-bold text-teal-600">64.6 kg</div>
+                            </div>
+                            <div class="bg-amber-50 rounded-xl p-4 result-card">
+                                <h4 class="text-sm font-medium text-gray-600 mb-2">Miller Formula</h4>
+                                <div id="iw-miller" class="text-2xl font-bold text-amber-600">65.3 kg</div>
+                            </div>
+                            <div class="bg-pink-50 rounded-xl p-4 result-card">
+                                <h4 class="text-sm font-medium text-gray-600 mb-2">Hamwi Formula</h4>
+                                <div id="iw-hamwi" class="text-2xl font-bold text-pink-600">68.0 kg</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Water Intake Calculator -->
+            <div id="content-water" class="tab-content hidden">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Tính nhu cầu nước hàng ngày</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Cân nặng (kg)</label>
+                            <input type="range" id="water-weight" value="65" min="30" max="200" class="w-full" oninput="calculateWater(); document.getElementById('water-weight-display').textContent = this.value + ' kg'">
+                            <div class="flex justify-between text-sm text-gray-500 mt-1">
+                                <span>30 kg</span>
+                                <span id="water-weight-display" class="font-bold text-cyan-600">65 kg</span>
+                                <span>200 kg</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Hoạt động thể chất (phút/ngày)</label>
+                            <input type="range" id="water-activity" value="30" min="0" max="180" class="w-full" oninput="calculateWater(); document.getElementById('water-activity-display').textContent = this.value + ' phút'">
+                            <div class="flex justify-between text-sm text-gray-500 mt-1">
+                                <span>0 phút</span>
+                                <span id="water-activity-display" class="font-bold text-cyan-600">30 phút</span>
+                                <span>180 phút</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Không khí</label>
+                            <select id="water-climate" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:outline-none transition-colors text-lg" onchange="calculateWater()">
+                                <option value="normal">Bình thường</option>
+                                <option value="hot">Nóng/khô</option>
+                                <option value="cold">Lạnh</option>
+                                <option value="humid">Nóng ẩm</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl p-6">
+                        <div class="text-center mb-6">
+                            <div class="text-6xl mb-4 pulse-animation">💧</div>
+                            <div id="water-result" class="text-5xl font-bold text-cyan-600 mb-2">2.4 L</div>
+                            <div class="text-gray-600">Nước cần uống mỗi ngày</div>
+                        </div>
+                        <div class="mt-6 space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                                <span>📚 Cơ bản (35ml/kg)</span>
+                                <span id="water-base" class="font-bold text-cyan-600">2.3 L</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                                <span>🏃 Bổ sung hoạt động</span>
+                                <span id="water-extra" class="font-bold text-blue-600">+0.1 L</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-white rounded-lg">
+                                <span>🌤️ Bổ sung khí hậu</span>
+                                <span id="water-climate-extra" class="font-bold text-teal-600">+0 L</span>
+                            </div>
+                        </div>
+                        <div class="mt-6 p-4 bg-white rounded-lg">
+                            <h4 class="font-semibold text-gray-700 mb-2">💡 Mẹo uống đủ nước</h4>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li>• Uống 1-2 ly ngay khi thức dậy</li>
+                                <li>• Uống trước bữa ăn 30 phút</li>
+                                <li>• Đặt nhắc nhở mỗi 2 giờ</li>
+                                <li>• Luôn mang theo bình nước</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Heart Rate Calculator -->
+            <div id="content-heart" class="tab-content hidden">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Tính các vùng nhịp tim tập luyện</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Tuổi</label>
+                            <input type="range" id="heart-age" value="30" min="10" max="100" class="w-full" oninput="calculateHeart(); document.getElementById('heart-age-display').textContent = this.value + ' tuổi'">
+                            <div class="flex justify-between text-sm text-gray-500 mt-1">
+                                <span>10 tuổi</span>
+                                <span id="heart-age-display" class="font-bold text-red-600">30 tuổi</span>
+                                <span>100 tuổi</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-medium mb-2">Nhịp tim nghỉ ngơi (bpm) - tùy chọn</label>
+                            <input type="range" id="heart-resting" value="70" min="40" max="120" class="w-full" oninput="calculateHeart(); document.getElementById('heart-resting-display').textContent = this.value + ' bpm'">
+                            <div class="flex justify-between text-sm text-gray-500 mt-1">
+                                <span>40 bpm</span>
+                                <span id="heart-resting-display" class="font-bold text-red-600">70 bpm</span>
+                                <span>120 bpm</span>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-xl">
+                            <h4 class="font-semibold text-gray-700 mb-3">Thông số</h4>
+                            <div class="space-y-2">
+                                <div class="flex justify-between">
+                                    <span>Nhịp tim tối đa (220 - tuổi):</span>
+                                    <span id="heart-max" class="font-bold text-red-600">190 bpm</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span>HR Reserve:</span>
+                                    <span id="heart-reserve" class="font-bold text-orange-600">120 bpm</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <h3 class="font-semibold text-gray-700 mb-4">🎯 Vùng nhịp tim Karvonen</h3>
+                        <div class="bg-gray-100 rounded-xl p-4 result-card">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="font-semibold text-gray-700">Khởi động</div>
+                                    <div class="text-sm text-gray-500">50-60% - Làm nóng cơ thể</div>
+                                </div>
+                                <div id="heart-zone1" class="text-xl font-bold text-gray-600">130-142 bpm</div>
+                            </div>
+                            <div class="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                <div class="progress-bar bg-gray-400" style="width: 16%"></div>
+                            </div>
+                        </div>
+                        <div class="bg-blue-50 rounded-xl p-4 result-card">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="font-semibold text-blue-700">Đốt mỡ</div>
+                                    <div class="text-sm text-blue-500">60-70% - Đốt mỡ hiệu quả</div>
+                                </div>
+                                <div id="heart-zone2" class="text-xl font-bold text-blue-600">142-154 bpm</div>
+                            </div>
+                            <div class="mt-2 h-2 bg-blue-100 rounded-full overflow-hidden">
+                                <div class="progress-bar bg-blue-400" style="width: 33%"></div>
+                            </div>
+                        </div>
+                        <div class="bg-green-50 rounded-xl p-4 result-card">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="font-semibold text-green-700">Hiếu khí</div>
+                                    <div class="text-sm text-green-500">70-80% - Cải thiện thể lực</div>
+                                </div>
+                                <div id="heart-zone3" class="text-xl font-bold text-green-600">154-166 bpm</div>
+                            </div>
+                            <div class="mt-2 h-2 bg-green-100 rounded-full overflow-hidden">
+                                <div class="progress-bar bg-green-400" style="width: 50%"></div>
+                            </div>
+                        </div>
+                        <div class="bg-orange-50 rounded-xl p-4 result-card">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="font-semibold text-orange-700">Vô khí</div>
+                                    <div class="text-sm text-orange-500">80-90% - Tăng sức bền</div>
+                                </div>
+                                <div id="heart-zone4" class="text-xl font-bold text-orange-600">166-178 bpm</div>
+                            </div>
+                            <div class="mt-2 h-2 bg-orange-100 rounded-full overflow-hidden">
+                                <div class="progress-bar bg-orange-400" style="width: 66%"></div>
+                            </div>
+                        </div>
+                        <div class="bg-red-50 rounded-xl p-4 result-card">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <div class="font-semibold text-red-700">Tối đa</div>
+                                    <div class="text-sm text-red-500">90-100% - Sprint, sức mạnh</div>
+                                </div>
+                                <div id="heart-zone5" class="text-xl font-bold text-red-600">178-190 bpm</div>
+                            </div>
+                            <div class="mt-2 h-2 bg-red-100 rounded-full overflow-hidden">
+                                <div class="progress-bar bg-red-400" style="width: 83%"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- BMR Calculator -->
-        <div class="card" id="bmr">
-            <h2 style="color: #333; margin-bottom: 20px;">🔥 Chỉ Số BMR (Trao đổi chất cơ bản)</h2>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Giới tính</label>
-                    <select id="bmr-gender">
-                        <option value="male">Nam</option>
-                        <option value="female">Nữ</option>
-                    </select>
+        <!-- Info Section -->
+        <div class="mt-8 bg-gradient-to-r from-purple-100 to-pink-100 rounded-2xl p-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">⚠️ Lưu ý quan trọng</h3>
+            <div class="grid md:grid-cols-3 gap-4 text-sm text-gray-600">
+                <div class="flex items-start">
+                    <span class="text-2xl mr-2">📊</span>
+                    <p>Các công thức tính chỉ mang tính tham khảo. Để có kết quả chính xác, hãy tham khảo ý kiến bác sĩ hoặc chuyên gia dinh dưỡng.</p>
                 </div>
-                <div class="form-group">
-                    <label>Tuổi</label>
-                    <input type="number" id="bmr-age" placeholder="Nhập tuổi">
+                <div class="flex items-start">
+                    <span class="text-2xl mr-2">🏃</span>
+                    <p>Chỉ số sức khỏe là một phần của bức tranh tổng thể. Thể lực, tinh thần, và lối sống cũng rất quan trọng.</p>
                 </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Cân nặng (kg)</label>
-                    <input type="number" id="bmr-weight" placeholder="Nhập cân nặng" step="0.1">
-                </div>
-                <div class="form-group">
-                    <label>Chiều cao (cm)</label>
-                    <input type="number" id="bmr-height" placeholder="Nhập chiều cao" step="0.1">
-                </div>
-            </div>
-            <button class="btn-calculate" onclick="calculateBMR()">Tính BMR</button>
-            <div class="result" id="bmr-result">
-                <h3>✅ Kết quả BMR</h3>
-                <div class="result-item">
-                    <span class="result-label">Chỉ số BMR của bạn:</span>
-                    <span class="result-value" id="bmr-value">-- kcal/ngày</span>
-                </div>
-                <div class="health-tips">
-                    <h4>💡 Ý nghĩa:</h4>
-                    <p>BMR là lượng calories cơ thể đốt cháy khi nghỉ ngơi hoàn toàn. Đây là năng lượng tối thiểu để duy trì các chức năng sống.</p>
+                <div class="flex items-start">
+                    <span class="text-2xl mr-2">❤️</span>
+                    <p>Hãy kết hợp chế độ ăn uống khoa học, vận động thường xuyên và nghỉ ngơi đầy đủ để sức khỏe tốt nhất.</p>
                 </div>
             </div>
         </div>
+    </main>
 
-        <!-- TDEE Calculator -->
-        <div class="card" id="tdee">
-            <h2 style="color: #333; margin-bottom: 20px;">📊 TDEE (Năng lượng tiêu hao hàng ngày)</h2>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Giới tính</label>
-                    <select id="tdee-gender">
-                        <option value="male">Nam</option>
-                        <option value="female">Nữ</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Tuổi</label>
-                    <input type="number" id="tdee-age" placeholder="Nhập tuổi">
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Cân nặng (kg)</label>
-                    <input type="number" id="tdee-weight" placeholder="Nhập cân nặng" step="0.1">
-                </div>
-                <div class="form-group">
-                    <label>Chiều cao (cm)</label>
-                    <input type="number" id="tdee-height" placeholder="Nhập chiều cao" step="0.1">
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Mức độ vận động</label>
-                <select id="tdee-activity">
-                    <option value="1.2">🛋️ Ít vận động (ngồi nhiều)</option>
-                    <option value="1.375">🚶 Nhẹ (vận động 1-3 ngày/tuần)</option>
-                    <option value="1.55">🏃 Trung bình (vận động 3-5 ngày/tuần)</option>
-                    <option value="1.725">💪 Nặng (vận động 6-7 ngày/tuần)</option>
-                    <option value="1.9">🏋️ Rất nặng (vận động 2 lần/ngày)</option>
-                </select>
-            </div>
-            <button class="btn-calculate" onclick="calculateTDEE()">Tính TDEE</button>
-            <div class="result" id="tdee-result">
-                <h3>✅ Kết quả TDEE</h3>
-                <div class="result-item">
-                    <span class="result-label">Năng lượng tiêu hao/ngày:</span>
-                    <span class="result-value" id="tdee-value">-- kcal</span>
-                </div>
-                <div class="result-item">
-                    <span class="result-label">Giảm cân (0.5kg/tuần):</span>
-                    <span class="result-value" id="tdee-lose">-- kcal/ngày</span>
-                </div>
-                <div class="result-item">
-                    <span class="result-label">Tăng cân (0.5kg/tuần):</span>
-                    <span class="result-value" id="tdee-gain">-- kcal/ngày</span>
-                </div>
-            </div>
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6 mt-12">
+        <div class="max-w-5xl mx-auto px-4 text-center">
+            <p class="text-gray-400">🏥 Health Calculator Pro - Công cụ sức khỏe toàn diện</p>
+            <p class="text-sm text-gray-500 mt-2">Phát triển với ❤️ cho sức khỏe cộng đồng</p>
         </div>
-
-        <!-- Blood Pressure -->
-        <div class="card" id="blood">
-            <h2 style="color: #333; margin-bottom: 20px;">❤️ Huyết Áp</h2>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Huyết áp tâm thu (mmHg)</label>
-                    <input type="number" id="bp-systolic" placeholder="Ví dụ: 120">
-                </div>
-                <div class="form-group">
-                    <label>Huyết áp tâm trương (mmHg)</label>
-                    <input type="number" id="bp-diastolic" placeholder="Ví dụ: 80">
-                </div>
-            </div>
-            <button class="btn-calculate" onclick="calculateBP()">Đánh giá Huyết Áp</button>
-            <div class="result" id="bp-result">
-                <h3>✅ Kết quả Huyết Áp</h3>
-                <div class="result-item">
-                    <span class="result-label">Chỉ số của bạn:</span>
-                    <span class="result-value" id="bp-value">-- / -- mmHg</span>
-                </div>
-                <div id="bp-status"></div>
-                <div class="health-tips" id="bp-tips">
-                    <h4>💡 Hướng dẫn:</h4>
-                    <ul>
-                        <li>Huyết áp bình thường: < 120/80 mmHg</li>
-                        <li>Tăng nhẹ: 120-129 / < 80 mmHg</li>
-                        <li>Cao giai đoạn 1: 130-139 / 80-89 mmHg</li>
-                        <li>Cao giai đoạn 2: ≥ 140 / ≥ 90 mmHg</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <!-- Water Calculator -->
-        <div class="card" id="water">
-            <h2 style="color: #333; margin-bottom: 20px;">💧 Lượng Nước Cần Uống</h2>
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Cân nặng (kg)</label>
-                    <input type="number" id="water-weight" placeholder="Nhập cân nặng" step="0.1">
-                </div>
-                <div class="form-group">
-                    <label>Mức độ vận động</label>
-                    <select id="water-activity">
-                        <option value="0">Nhẹ (ngồi nhiều)</option>
-                        <option value="500">Trung bình</option>
-                        <option value="1000">Nặng (vận động nhiều)</option>
-                    </select>
-                </div>
-            </div>
-            <button class="btn-calculate" onclick="calculateWater()">Tính Lượng Nước</button>
-            <div class="result" id="water-result">
-                <div class="water-result">
-                    <div class="water-icon">💧</div>
-                    <div class="water-amount" id="water-amount">--</div>
-                    <div class="water-unit">ml nước/ngày</div>
-                    <div style="margin-top: 15px; color: #666;">
-                        Tương đương: <span id="water-glasses">--</span> ly (250ml)
-                    </div>
-                </div>
-                <div class="health-tips">
-                    <h4>💡 Mẹo uống nước:</h4>
-                    <ul>
-                        <li>Uống nước đều đặn trong ngày</li>
-                        <li>Không uống quá nhiều cùng lúc</li>
-                        <li>Uống nước trước bữa ăn 30 phút</li>
-                        <li>Tránh uống nước ngọt, có gas</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
+    </footer>
 
     <script>
-        // Tab switching
-        function showTab(tabId) {
-            document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            
-            document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
+        // Tab Navigation
+        function showTab(tabName) {
+            // Hide all content
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('tab-active');
+                el.classList.add('bg-gray-200');
+            });
+            // Show selected content
+            document.getElementById('content-' + tabName).classList.remove('hidden');
+            // Activate selected tab
+            document.getElementById('tab-' + tabName).classList.add('tab-active');
+            document.getElementById('tab-' + tabName).classList.remove('bg-gray-200');
         }
 
-        // Calculate BMI
+        // BMI Calculator
         function calculateBMI() {
-            const weight = parseFloat(document.getElementById('bmi-weight').value);
-            const height = parseFloat(document.getElementById('bmi-height').value) / 100;
+            const height = parseFloat(document.getElementById('bmi-height').value) || 170;
+            const weight = parseFloat(document.getElementById('bmi-weight').value) || 65;
             
-            if (!weight || !height) {
-                alert('Vui lòng nhập đầy đủ thông tin!');
-                return;
-            }
+            const heightM = height / 100;
+            const bmi = weight / (heightM * heightM);
             
-            const bmi = (weight / (height * height)).toFixed(1);
-            document.getElementById('bmi-value').textContent = bmi;
+            document.getElementById('bmi-preview').textContent = `${height} cm, ${weight} kg`;
+            document.getElementById('bmi-result').textContent = bmi.toFixed(2);
             
-            const resultDiv = document.getElementById('bmi-result');
-            resultDiv.classList.add('show');
-            
-            // Calculate marker position (BMI 15-40 range)
-            const markerPos = Math.min(Math.max(((bmi - 15) / 25) * 100, 0), 100);
-            document.getElementById('bmi-marker').style.left = markerPos + '%';
-            
-            const statusDiv = document.getElementById('bmi-status');
-            let status, statusClass;
+            let category = '';
+            let color = '';
+            let position = 0;
             
             if (bmi < 18.5) {
-                status = 'Thiếu cân';
-                statusClass = 'status-underweight';
+                category = 'Thiếu cân';
+                color = 'text-blue-600';
+                position = Math.max(0, (bmi - 15) / (18.5 - 15) * 25);
             } else if (bmi < 25) {
-                status = 'Bình thường';
-                statusClass = 'status-normal';
+                category = 'Bình thường';
+                color = 'text-green-600';
+                position = 25 + (bmi - 18.5) / (25 - 18.5) * 25;
             } else if (bmi < 30) {
-                status = 'Thừa cân';
-                statusClass = 'status-overweight';
+                category = 'Thừa cân';
+                color = 'text-yellow-600';
+                position = 50 + (bmi - 25) / (30 - 25) * 25;
             } else {
-                status = 'Béo phì';
-                statusClass = 'status-obese';
+                category = 'Béo phì';
+                color = 'text-red-600';
+                position = Math.min(100, 75 + (bmi - 30) / (40 - 30) * 25);
             }
             
-            statusDiv.innerHTML = `<span class="status-badge ${statusClass}">${status}</span>`;
+            document.getElementById('bmi-category').textContent = category;
+            document.getElementById('bmi-category').className = `text-xl font-semibold ${color}`;
+            document.getElementById('bmi-result').className = `text-6xl font-bold ${color}`;
+            document.getElementById('bmi-indicator').style.left = position + '%';
         }
 
-        // Calculate BMR (Mifflin-St Jeor)
-        function calculateBMR() {
-            const gender = document.getElementById('bmr-gender').value;
-            const age = parseFloat(document.getElementById('bmr-age').value);
-            const weight = parseFloat(document.getElementById('bmr-weight').value);
-            const height = parseFloat(document.getElementById('bmr-height').value);
+        // Body Fat Calculator
+        function calculateBodyFat() {
+            const gender = document.getElementById('bf-gender').value;
+            const height = parseFloat(document.getElementById('bf-height').value) || 170;
+            const waist = parseFloat(document.getElementById('bf-waist').value) || 80;
+            const neck = parseFloat(document.getElementById('bf-neck').value) || 38;
+            const hip = parseFloat(document.getElementById('bf-hip').value) || 95;
             
-            if (!age || !weight || !height) {
-                alert('Vui lòng nhập đầy đủ thông tin!');
-                return;
+            let bodyFat = 0;
+            
+            if (gender === 'male') {
+                // US Navy formula for men
+                bodyFat = 495 / (1.0324 - 0.19077 * Math.log10(waist - neck) + 0.15456 * Math.log10(height)) - 450;
+                document.getElementById('bf-hip-container').style.opacity = '0.5';
+                document.getElementById('bf-categories-male').classList.remove('hidden');
+                document.getElementById('bf-categories-female').classList.add('hidden');
+            } else {
+                // US Navy formula for women
+                bodyFat = 495 / (1.29579 - 0.35004 * Math.log10(waist + hip - neck) + 0.22100 * Math.log10(height)) - 450;
+                document.getElementById('bf-hip-container').style.opacity = '1';
+                document.getElementById('bf-categories-male').classList.add('hidden');
+                document.getElementById('bf-categories-female').classList.remove('hidden');
             }
             
+            bodyFat = Math.max(2, Math.min(60, bodyFat));
+            
+            document.getElementById('bf-result').textContent = bodyFat.toFixed(1) + '%';
+            
+            let category = '';
+            let position = (bodyFat - 2) / (50 - 2) * 100;
+            
+            if (gender === 'male') {
+                if (bodyFat < 5) category = 'Mỡ thiết yếu';
+                else if (bodyFat < 14) category = 'Vận động viên';
+                else if (bodyFat < 18) category = 'Thể thao';
+                else if (bodyFat < 25) category = 'Bình thường';
+                else category = 'Béo phì';
+            } else {
+                if (bodyFat < 14) category = 'Mỡ thiết yếu';
+                else if (bodyFat < 21) category = 'Vận động viên';
+                else if (bodyFat < 25) category = 'Thể thao';
+                else if (bodyFat < 32) category = 'Bình thường';
+                else category = 'Béo phì';
+            }
+            
+            const color = bodyFat > 25 ? 'text-red-600' : 'text-green-600';
+            document.getElementById('bf-category').textContent = category;
+            document.getElementById('bf-category').className = `text-xl font-semibold ${color}`;
+            document.getElementById('bf-indicator').style.left = position + '%';
+        }
+
+        // Calories Calculator
+        function calculateCalories() {
+            const gender = document.getElementById('cal-gender').value;
+            const age = parseFloat(document.getElementById('cal-age').value) || 30;
+            const height = parseFloat(document.getElementById('cal-height').value) || 170;
+            const weight = parseFloat(document.getElementById('cal-weight').value) || 65;
+            const activity = parseFloat(document.getElementById('cal-activity').value) || 1.55;
+            
+            // Mifflin-St Jeor Equation
             let bmr;
             if (gender === 'male') {
-                bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+                bmr = 10 * weight + 6.25 * height - 5 * age + 5;
             } else {
-                bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
+                bmr = 10 * weight + 6.25 * height - 5 * age - 161;
             }
             
-            document.getElementById('bmr-value').textContent = Math.round(bmr) + ' kcal/ngày';
-            document.getElementById('bmr-result').classList.add('show');
+            const tdee = bmr * activity;
+            
+            document.getElementById('cal-bmr').textContent = Math.round(bmr).toLocaleString();
+            document.getElementById('cal-tdee').textContent = Math.round(tdee).toLocaleString();
+            document.getElementById('cal-loss').textContent = Math.round(tdee - 500).toLocaleString() + ' kcal';
+            document.getElementById('cal-maintain').textContent = Math.round(tdee).toLocaleString() + ' kcal';
+            document.getElementById('cal-gain').textContent = Math.round(tdee + 500).toLocaleString() + ' kcal';
         }
 
-        // Calculate TDEE
-        function calculateTDEE() {
-            const gender = document.getElementById('tdee-gender').value;
-            const age = parseFloat(document.getElementById('tdee-age').value);
-            const weight = parseFloat(document.getElementById('tdee-weight').value);
-            const height = parseFloat(document.getElementById('tdee-height').value);
-            const activity = parseFloat(document.getElementById('tdee-activity').value);
+        // Ideal Weight Calculator
+        function calculateIdealWeight() {
+            const gender = document.getElementById('iw-gender').value;
+            const height = parseFloat(document.getElementById('iw-height').value) || 170;
             
-            if (!age || !weight || !height) {
-                alert('Vui lòng nhập đầy đủ thông tin!');
-                return;
-            }
+            const heightIn = height / 2.54;
+            const over5ft = Math.max(0, heightIn - 60);
             
-            let bmr;
-            if (gender === 'male') {
-                bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
-            } else {
-                bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
-            }
+            // Healthy BMI range
+            const minWeight = 18.5 * Math.pow(height / 100, 2);
+            const maxWeight = 24.9 * Math.pow(height / 100, 2);
             
-            const tdee = Math.round(bmr * activity);
-            document.getElementById('tdee-value').textContent = tdee + ' kcal';
-            document.getElementById('tdee-lose').textContent = (tdee - 500) + ' kcal';
-            document.getElementById('tdee-gain').textContent = (tdee + 500) + ' kcal';
-            document.getElementById('tdee-result').classList.add('show');
+            // Different formulas
+            const devine = gender === 'male' ? 50 + 2.3 * over5ft : 45.5 + 2.3 * over5ft;
+            const robinson = gender === 'male' ? 52 + 1.9 * over5ft : 49 + 1.7 * over5ft;
+            const miller = gender === 'male' ? 56.2 + 1.41 * over5ft : 53.1 + 1.36 * over5ft;
+            const hamwi = gender === 'male' ? 48 + 2.7 * over5ft : 45.5 + 2.2 * over5ft;
+            
+            document.getElementById('iw-min').textContent = minWeight.toFixed(1) + ' kg';
+            document.getElementById('iw-max').textContent = maxWeight.toFixed(1) + ' kg';
+            document.getElementById('iw-devine').textContent = devine.toFixed(1) + ' kg';
+            document.getElementById('iw-robinson').textContent = robinson.toFixed(1) + ' kg';
+            document.getElementById('iw-miller').textContent = miller.toFixed(1) + ' kg';
+            document.getElementById('iw-hamwi').textContent = hamwi.toFixed(1) + ' kg';
         }
 
-        // Calculate Blood Pressure
-        function calculateBP() {
-            const systolic = parseFloat(document.getElementById('bp-systolic').value);
-            const diastolic = parseFloat(document.getElementById('bp-diastolic').value);
-            
-            if (!systolic || !diastolic) {
-                alert('Vui lòng nhập đầy đủ thông tin!');
-                return;
-            }
-            
-            document.getElementById('bp-value').textContent = systolic + ' / ' + diastolic + ' mmHg';
-            
-            const resultDiv = document.getElementById('bp-result');
-            resultDiv.classList.add('show');
-            
-            const statusDiv = document.getElementById('bp-status');
-            let status, statusClass, message;
-            
-            if (systolic < 120 && diastolic < 80) {
-                status = 'Bình thường';
-                statusClass = 'status-normal';
-                message = 'Huyết áp của bạn ở mức lý tưởng. Hãy duy trì lối sống lành mạnh!';
-            } else if (systolic >= 120 && systolic <= 129 && diastolic < 80) {
-                status = 'Tăng nhẹ';
-                statusClass = 'status-overweight';
-                message = 'Huyết áp cao nhẹ. Hãy giảm muối và tập thể dục đều đặn.';
-            } else if ((systolic >= 130 && systolic <= 139) || (diastolic >= 80 && diastolic <= 89)) {
-                status = 'Cao giai đoạn 1';
-                statusClass = 'status-overweight';
-                message = 'Cần thay đổi lối sống. Nên khám bác sĩ để được tư vấn.';
-            } else {
-                status = 'Cao giai đoạn 2';
-                statusClass = 'status-obese';
-                message = 'Cần điều trị ngay. Hãy đến cơ sở y tế kiểm tra.';
-            }
-            
-            statusDiv.innerHTML = `
-                <span class="status-badge ${statusClass}">${status}</span>
-                <p style="margin-top: 15px; color: #555;">${message}</p>
-            `;
-        }
-
-        // Calculate Water
+        // Water Intake Calculator
         function calculateWater() {
-            const weight = parseFloat(document.getElementById('water-weight').value);
-            const activity = parseFloat(document.getElementById('water-activity').value);
+            const weight = parseFloat(document.getElementById('water-weight').value) || 65;
+            const activity = parseFloat(document.getElementById('water-activity').value) || 30;
+            const climate = document.getElementById('water-climate').value;
             
-            if (!weight) {
-                alert('Vui lòng nhập cân nặng!');
-                return;
-            }
+            const base = weight * 0.035;
+            const activityExtra = (activity / 30) * 0.1;
             
-            const water = Math.round(weight * 35 + activity);
-            const glasses = Math.round(water / 250);
+            let climateExtra = 0;
+            if (climate === 'hot') climateExtra = 0.3;
+            else if (climate === 'humid') climateExtra = 0.2;
+            else if (climate === 'cold') climateExtra = 0.1;
             
-            document.getElementById('water-amount').textContent = water;
-            document.getElementById('water-glasses').textContent = glasses;
-            document.getElementById('water-result').classList.add('show');
+            const total = base + activityExtra + climateExtra;
+            
+            document.getElementById('water-base').textContent = base.toFixed(1) + ' L';
+            document.getElementById('water-extra').textContent = '+' + activityExtra.toFixed(1) + ' L';
+            document.getElementById('water-climate-extra').textContent = '+' + climateExtra.toFixed(1) + ' L';
+            document.getElementById('water-result').textContent = total.toFixed(1) + ' L';
         }
+
+        // Heart Rate Calculator
+        function calculateHeart() {
+            const age = parseFloat(document.getElementById('heart-age').value) || 30;
+            const restingHR = parseFloat(document.getElementById('heart-resting').value) || 70;
+            
+            const maxHR = 220 - age;
+            const reserveHR = maxHR - restingHR;
+            
+            document.getElementById('heart-max').textContent = maxHR + ' bpm';
+            document.getElementById('heart-reserve').textContent = reserveHR + ' bpm';
+            
+            // Karvonen formula zones
+            const zones = [
+                [0.5, 0.6],  // Warmup
+                [0.6, 0.7],  // Fat burn
+                [0.7, 0.8],  // Aerobic
+                [0.8, 0.9],  // Anaerobic
+                [0.9, 1.0]   // Maximum
+            ];
+            
+            zones.forEach((zone, i) => {
+                const low = Math.round(restingHR + reserveHR * zone[0]);
+                const high = Math.round(restingHR + reserveHR * zone[1]);
+                document.getElementById('heart-zone' + (i + 1)).textContent = low + '-' + high + ' bpm';
+            });
+        }
+
+        // Initialize all calculations on load
+        window.onload = function() {
+            calculateBMI();
+            calculateBodyFat();
+            calculateCalories();
+            calculateIdealWeight();
+            calculateWater();
+            calculateHeart();
+        };
     </script>
 </body>
 </html>
